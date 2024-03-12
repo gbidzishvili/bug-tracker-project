@@ -7,3 +7,4 @@ Flask-Migrate
 python-dotenv
 MySQL-python
 flask-mysql
+Flask-WTF
