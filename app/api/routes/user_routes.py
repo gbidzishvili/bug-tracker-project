@@ -2,7 +2,7 @@ from flask import request, jsonify
 from main import db, bcrypt, app
 from app.models.User import User
 from flask import Blueprint
-from app.validations.auth_validation import RegisterForm
+from app.validations.auth_validation import RegisterForm, LoginForm
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 user_bp = Blueprint('users', __name__, url_prefix='/users')
@@ -34,6 +34,27 @@ def register_user():
 
   access_token = create_access_token(identity=data['username'])
   return jsonify({"message": "User registered successfully", "access_token": access_token}), 201
+
+
+@user_bp.route('/login', methods=['POST'])
+def login_user():
+  data = request.form
+  form = LoginForm(data)
+
+  if not form.validate():
+    return jsonify({"message": "Validation Error", "errors": form.errors}), 400
+
+  with app.app_context():
+    user = User.query.filter_by(email=data['email']).first()
+    if not user:
+      return jsonify({"message": "Invalid email"}), 400
+
+    if not bcrypt.check_password_hash(user.password, data['password']):
+      return jsonify({"message": "Invalid password"}), 400
+
+    access_token = create_access_token(identity=user.username)
+    return jsonify({"message": "User logged in successfully", "access_token": access_token}), 200
+  
 
 
 @user_bp.route('/protected', methods=['GET'])
