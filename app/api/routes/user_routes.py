@@ -4,6 +4,8 @@ from app.models.User import User
 from flask import Blueprint
 from app.validations.auth_validation import RegisterForm, LoginForm
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import set_access_cookies, unset_jwt_cookies
+import datetime
 
 user_bp = Blueprint('users', __name__, url_prefix='/users')
 
@@ -32,8 +34,11 @@ def register_user():
     db.session.add(new_user)
     db.session.commit()
 
-  access_token = create_access_token(identity=data['username'])
-  return jsonify({"message": "User registered successfully", "access_token": access_token}), 201
+    access_token = create_access_token(identity=data['username'], expires_delta=datetime.timedelta(minutes=1440))
+    message = jsonify({"message": "User registered successfully"})
+    set_access_cookies(message, access_token)
+
+    return message, 200
 
 
 @user_bp.route('/login', methods=['POST'])
@@ -52,10 +57,17 @@ def login_user():
     if not bcrypt.check_password_hash(user.password, data['password']):
       return jsonify({"message": "Invalid password"}), 400
 
-    access_token = create_access_token(identity=user.username)
-    return jsonify({"message": "User logged in successfully", "access_token": access_token}), 200
-  
+    access_token = create_access_token(identity=user.username, expires_delta=datetime.timedelta(minutes=1440))
+    message = jsonify({"message": "User Logged in successfully"})
+    set_access_cookies(message, access_token)
+    return message, 200
 
+@user_bp.route('/logout', methods=['POST'])  
+@jwt_required()
+def logout():
+  message = jsonify({"message": "User Logged out successfully"})
+  unset_jwt_cookies(message)
+  return message, 200
 
 @user_bp.route('/protected', methods=['GET'])
 @jwt_required()
