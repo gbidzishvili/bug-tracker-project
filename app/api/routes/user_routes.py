@@ -13,28 +13,28 @@ user_bp = Blueprint('users', __name__, url_prefix='/users')
 def register_user():
   data = request.form
   form = RegisterForm(data)
-  if not form.validate():
-    return jsonify({"message": "Validation Error", "errors": form.errors}), 400
   
   with app.app_context():
+    if not form.validate():
+      return jsonify({"message": "Validation Error", "errors": form.errors}), 400
+    
     if User.query.filter_by(username=data['username']).first():
       return jsonify({"message": "Username already exists"}), 400
     
     if User.query.filter_by(email=data['email']).first():
       return jsonify({"message": "Email already exists"}), 400
-
-  new_user = User(
+    
+    new_user = User(
       username=data['username'],
       first_name=data['first_name'],
       last_name=data['last_name'],
       email=data['email'],
       password=bcrypt.generate_password_hash(data['password'])
   )
-  with app.app_context():
     db.session.add(new_user)
     db.session.commit()
 
-    access_token = create_access_token(identity=data['username'], expires_delta=datetime.timedelta(minutes=1440))
+    access_token = create_access_token(identity=data['username'], expires_delta=datetime.timedelta(days=1))
     message = jsonify({"message": "User registered successfully"})
     set_access_cookies(message, access_token)
 
@@ -46,10 +46,9 @@ def login_user():
   data = request.form
   form = LoginForm(data)
 
-  if not form.validate():
-    return jsonify({"message": "Validation Error", "errors": form.errors}), 400
-
   with app.app_context():
+    if not form.validate():
+      return jsonify({"message": "Validation Error", "errors": form.errors}), 400
     user = User.query.filter_by(email=data['email']).first()
     if not user:
       return jsonify({"message": "Invalid email"}), 400
@@ -57,7 +56,7 @@ def login_user():
     if not bcrypt.check_password_hash(user.password, data['password']):
       return jsonify({"message": "Invalid password"}), 400
 
-    access_token = create_access_token(identity=user.username, expires_delta=datetime.timedelta(minutes=1440))
+    access_token = create_access_token(identity=user.username, expires_delta=datetime.timedelta(days=1))
     message = jsonify({"message": "User Logged in successfully"})
     set_access_cookies(message, access_token)
     return message, 200
