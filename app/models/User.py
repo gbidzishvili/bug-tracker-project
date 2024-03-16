@@ -8,7 +8,8 @@ class User(db.Model):
   username = db.Column(db.String(12), nullable=False, unique=True)
   password = db.Column(db.String(120), nullable=False)
   email = db.Column(db.String(120), nullable=False, unique=True)
-  created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+  created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+  role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
 
   def __repr__(self):
     return f"Username: {self.username}, First Name: {self.first_name}, Last Name: {self.last_name}, Email: {self.email}"
