@@ -1,11 +1,13 @@
 from flask import request, jsonify
 from main import db, bcrypt, app
 from app.models.User import User
+from app.models.Role import Role
 from flask import Blueprint
 from app.validations.auth_validation import RegisterForm, LoginForm
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from flask_jwt_extended import set_access_cookies, unset_jwt_cookies
 import datetime
+from sqlalchemy import or_
 
 user_bp = Blueprint('users', __name__, url_prefix='/users')
 
@@ -15,20 +17,26 @@ def register_user():
   form = RegisterForm(data)
   
   with app.app_context():
+    role = Role.query.filter_by(id=data['role_id']).first()
+    existing_user = User.query.filter(or_(User.username == data['username'], User.email == data['email'])).first()
     if not form.validate():
       return jsonify({"message": "Validation Error", "errors": form.errors}), 400
-    
-    if User.query.filter_by(username=data['username']).first():
+
+    if existing_user and existing_user.username == data['username']:
       return jsonify({"message": "Username already exists"}), 400
     
-    if User.query.filter_by(email=data['email']).first():
+    if existing_user and existing_user.email == data['email']:
       return jsonify({"message": "Email already exists"}), 400
+    
+    if not role:
+      return jsonify({"message": "Invalid role id"}), 400
     
     new_user = User(
       username=data['username'],
       first_name=data['first_name'],
       last_name=data['last_name'],
       email=data['email'],
+      role_id=data['role_id'],
       password=bcrypt.generate_password_hash(data['password'])
   )
     db.session.add(new_user)

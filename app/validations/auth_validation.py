@@ -13,6 +13,7 @@ class RegisterForm(FlaskForm):
         validators.Length(min=8, max=40)
     ])
     confirm_password = PasswordField('confirm_password')
+    role_id = StringField('role_id', [validators.DataRequired()])
 
 class LoginForm(FlaskForm):
     email = StringField('email', [validators.Length(min=6, max=50)])
