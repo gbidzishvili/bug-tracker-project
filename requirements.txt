@@ -10,3 +10,4 @@ flask-mysql
 Flask-WTF
 flask-jwt-extended
 flask-cors
+click
