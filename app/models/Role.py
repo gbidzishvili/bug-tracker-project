@@ -7,4 +7,4 @@ class Role(db.Model):
   created_at = db.Column(db.DateTime, default=datetime.datetime.now)
   
   def __repr__(self):
-    return f"Role: {self.role}"
+    return self.role
