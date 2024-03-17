@@ -14,6 +14,7 @@ class RegisterForm(FlaskForm):
     ])
     confirm_password = PasswordField('confirm_password')
     role_id = StringField('role_id', [validators.DataRequired()])
+    company_name = StringField('company_name', [validators.DataRequired()])
 
 class LoginForm(FlaskForm):
     email = StringField('email', [validators.Length(min=6, max=50)])
