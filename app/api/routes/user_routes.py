@@ -17,10 +17,14 @@ def register_user():
   form = RegisterForm(data)
   
   with app.app_context():
-    role = Role.query.filter_by(id=data['role_id']).first()
-    existing_user = User.query.filter(or_(User.username == data['username'], User.email == data['email'])).first()
     if not form.validate():
       return jsonify({"message": "Validation Error", "errors": form.errors}), 400
+    
+    role = Role.query.filter_by(id=data['role_id']).first()
+    existing_user = User.query.filter(or_(User.username == data['username'], User.email == data['email']), User.company_name == data['company_name']).first()
+
+    if existing_user and existing_user.company_name == data['company_name']:
+      return jsonify({"message": "Company already exists"}), 400
 
     if existing_user and existing_user.username == data['username']:
       return jsonify({"message": "Username already exists"}), 400
@@ -37,7 +41,8 @@ def register_user():
       last_name=data['last_name'],
       email=data['email'],
       role_id=data['role_id'],
-      password=bcrypt.generate_password_hash(data['password'])
+      password=bcrypt.generate_password_hash(data['password']),
+      company_name=data['company_name']
   )
     db.session.add(new_user)
     db.session.commit()
@@ -45,7 +50,6 @@ def register_user():
     access_token = create_access_token(identity=data['username'], expires_delta=datetime.timedelta(days=1))
     message = jsonify({"message": "User registered successfully"})
     set_access_cookies(message, access_token)
-
     return message, 200
 
 

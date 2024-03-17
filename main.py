@@ -9,7 +9,7 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
+CORS(app, origins=["http://localhost:3000/*"], supports_credentials=True)
 bcrypt = Bcrypt(app)
 app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
