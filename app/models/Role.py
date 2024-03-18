@@ -6,5 +6,5 @@ class Role(db.Model):
   role = db.Column(db.String(50), nullable=False, unique=True)
   created_at = db.Column(db.DateTime, default=datetime.datetime.now)
   
-  def __repr__(self):
-    return self.role
+  def to_dict(self):
+    return {"role_id": self.id, "role": self.role}

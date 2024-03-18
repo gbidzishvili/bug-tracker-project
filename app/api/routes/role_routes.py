@@ -8,8 +8,8 @@ from flask_jwt_extended import jwt_required
 role_bp = Blueprint('roles', __name__, url_prefix='/roles')
 
 @role_bp.route('/get', methods=['GET'])
-@jwt_required()
 def get_roles():
   with app.app_context():
     roles = Role.query.all()
-    return jsonify(roles=[role.__repr__() for role in roles])
+    roles= [role.to_dict() for role in roles]
+    return jsonify({"data": roles})
