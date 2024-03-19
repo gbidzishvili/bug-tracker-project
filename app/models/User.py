@@ -10,7 +10,7 @@ class User(db.Model):
   email = db.Column(db.String(120), nullable=False, unique=True)
   created_at = db.Column(db.DateTime, default=datetime.datetime.now)
   role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
-  company_name = db.Column(db.String(40), nullable=False, unique=True)
+  company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
 
   def __repr__(self):
-    return {"username": self.username, "first_name": self.first_name, "last_name": self.last_name, "email": self.email, "role_id": self.role_id, "company_name": self.company_name}
+    return {"username": self.username, "first_name": self.first_name, "last_name": self.last_name, "email": self.email, "role_id": self.role_id, "company_id": self.company_id}

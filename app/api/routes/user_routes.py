@@ -2,6 +2,7 @@ from flask import request, jsonify
 from main import db, bcrypt, app
 from app.models.User import User
 from app.models.Role import Role
+from app.models.Company import Company
 from flask import Blueprint
 from app.validations.auth_validation import RegisterForm, LoginForm
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
@@ -21,10 +22,8 @@ def register_user():
       return jsonify({"message": "Validation Error", "errors": form.errors}), 400
     
     role = Role.query.filter_by(id=data['role_id']).first()
-    existing_user = User.query.filter(or_(User.username == data['username'], User.email == data['email']), User.company_name == data['company_name']).first()
-
-    if existing_user and existing_user.company_name == data['company_name']:
-      return jsonify({"message": "Company already exists"}), 400
+    company = Company.query.filter_by(company=data['company_name']).first()
+    existing_user = User.query.filter(or_(User.username == data['username'], User.email == data['email'])).first()
 
     if existing_user and existing_user.username == data['username']:
       return jsonify({"message": "Username already exists"}), 400
@@ -35,6 +34,9 @@ def register_user():
     if not role:
       return jsonify({"message": "Invalid role id"}), 400
     
+    if company and company.company == data['company_name'] and data['role_id'] == '1':
+      return jsonify({"message": "Company already has an admin"}), 400
+
     new_user = User(
       username=data['username'],
       first_name=data['first_name'],
@@ -42,10 +44,21 @@ def register_user():
       email=data['email'],
       role_id=data['role_id'],
       password=bcrypt.generate_password_hash(data['password']),
-      company_name=data['company_name']
-  )
+   )
     db.session.add(new_user)
     db.session.commit()
+
+    if data['role_id'] == '1':
+      new_company = Company(company=data['company_name'], admin_id=new_user.id)
+      db.session.add(new_company)
+      db.session.commit()
+
+      new_user.company_id = new_company.id
+      db.session.commit()
+    else:
+      new_user.company_id = company.id
+      db.session.add(new_user)
+      db.session.commit()
 
     access_token = create_access_token(identity=data['username'], expires_delta=datetime.timedelta(days=1))
     message = jsonify({"message": "User registered successfully"})
