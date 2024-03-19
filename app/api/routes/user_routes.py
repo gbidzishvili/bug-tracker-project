@@ -60,7 +60,8 @@ def register_user():
       db.session.add(new_user)
       db.session.commit()
 
-    access_token = create_access_token(identity=data['username'], expires_delta=datetime.timedelta(days=1))
+    
+    access_token = create_access_token(identity={"username": data['username'], "id": new_user.id, "company_id": new_user.company_id}, expires_delta=datetime.timedelta(days=1))
     message = jsonify({"message": "User registered successfully"})
     set_access_cookies(message, access_token)
     return message, 200
@@ -81,7 +82,7 @@ def login_user():
     if not bcrypt.check_password_hash(user.password, data['password']):
       return jsonify({"message": "Invalid password"}), 400
 
-    access_token = create_access_token(identity=user.username, expires_delta=datetime.timedelta(days=1))
+    access_token = create_access_token(identity={"username": user.username, "id": user.id, "company_id": user.company_id}, expires_delta=datetime.timedelta(days=1))
     message = jsonify({"message": "User Logged in successfully"})
     set_access_cookies(message, access_token)
     return message, 200
