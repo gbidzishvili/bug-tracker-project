@@ -25,6 +25,9 @@ def register_user():
     company = Company.query.filter_by(company=data['company_name']).first()
     existing_user = User.query.filter(or_(User.username == data['username'], User.email == data['email'])).first()
 
+    if not company and data['role_id'] != '1':
+      return jsonify({"message": "Company does not exist"}), 400
+
     if existing_user and existing_user.username == data['username']:
       return jsonify({"message": "Username already exists"}), 400
     
