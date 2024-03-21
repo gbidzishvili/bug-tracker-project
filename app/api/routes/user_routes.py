@@ -96,8 +96,12 @@ def logout():
   unset_jwt_cookies(message)
   return message, 200
 
-@user_bp.route('/protected', methods=['GET'])
+@user_bp.route('/user', methods=['GET'])
 @jwt_required()
-def protected():
+def get_user():
     current_user = get_jwt_identity()
+    with app.app_context():
+      user = User.query.add_columns(Company.company, Role.role).filter(User.id == current_user['id']).first()
+      current_user['company_name'] = str(user[1])
+      current_user['role_name'] = str(user[2])
     return jsonify(logged_in_as=current_user), 200
