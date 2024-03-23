@@ -101,7 +101,9 @@ def logout():
 def get_user():
     current_user = get_jwt_identity()
     with app.app_context():
-      user = User.query.add_columns(Company.company, Role.role).filter(User.id == current_user['id']).first()
+      user = User.query.add_columns(Company.company, Role.role, User.first_name, User.last_name).filter(User.id == current_user['id']).first()
       current_user['company_name'] = str(user[1])
       current_user['role_name'] = str(user[2])
+      current_user['first_name'] = str(user[3])
+      current_user['last_name'] = str(user[4])
     return jsonify(logged_in_as=current_user), 200
