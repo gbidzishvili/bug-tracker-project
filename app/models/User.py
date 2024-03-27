@@ -12,5 +12,5 @@ class User(db.Model):
   role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
   company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
 
-  def __repr__(self):
+  def to_dict(self):
     return {"username": self.username, "first_name": self.first_name, "last_name": self.last_name, "email": self.email, "role_id": self.role_id, "company_id": self.company_id}
