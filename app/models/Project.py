@@ -9,7 +9,6 @@ class Project(db.Model):
   
   def toDict(self):
     return {
-      'id': self.id,
       'project': self.project,
       'company_id': self.company_id,
     }

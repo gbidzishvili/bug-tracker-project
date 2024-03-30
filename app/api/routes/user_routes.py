@@ -23,12 +23,12 @@ def register_user():
     
     role = Role.query.filter_by(id=data['role_id']).first()
     company = Company.query.filter_by(company=data['company_name']).first()
-    existing_user = User.query.filter(or_(User.username == data['username'], User.email == data['email'])).first()
+    existing_user = User.query.filter(or_(User.username == data['username'].lower(), User.email == data['email'])).first()
 
     if not company and data['role_id'] != '1':
       return jsonify({"message": "Company does not exist"}), 400
 
-    if existing_user and existing_user.username == data['username']:
+    if existing_user and existing_user.username == data['username'].lower():
       return jsonify({"message": "Username already exists"}), 400
     
     if existing_user and existing_user.email == data['email']:
@@ -85,7 +85,7 @@ def login_user():
       return jsonify({"message": "Invalid password"}), 400
 
     access_token = create_access_token(identity={"username": user.username, "id": user.id, "company_id": user.company_id, "role_id": user.role_id}, expires_delta=datetime.timedelta(days=1))
-    message = jsonify({"message": "User Logged in successfully"})
+    message = jsonify({"message": "User logged in successfully"})
     set_access_cookies(message, access_token)
     return message, 200
 
@@ -101,7 +101,7 @@ def logout():
 def get_user():
     current_user = get_jwt_identity()
     with app.app_context():
-      user = User.query.join(Company, User.company_id == Company.id).join(Role, User.role_id == Role.id).add_columns(Company.company, Role.role).filter_by(id = current_user['id']).first()
+      user = User.query.join(Company, User.company_id == Company.id).join(Role, User.role_id == Role.id).add_columns(Company.company, Role.role).filter(User.id == current_user['id']).first()
       current_user['company_name'] = str(user[1])
       current_user['role_name'] = str(user[2])
       current_user['first_name'] = user[0].to_dict()['first_name']
