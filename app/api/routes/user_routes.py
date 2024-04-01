@@ -63,7 +63,7 @@ def register_user():
       db.session.commit()
 
     
-    access_token = create_access_token(identity={"username": data['username'], "id": new_user.id, "company_id": new_user.company_id, "role_id": new_user.role_id}, expires_delta=datetime.timedelta(days=1))
+    access_token = create_access_token(identity={"username": data['username'], "first_name": data['first_name'], "last_name": data['last_name'], "id": new_user.id, "company_id": new_user.company_id, "company_name": new_user.company.company , "role_id": new_user.role_id, "role_name": new_user.role.role}, expires_delta=datetime.timedelta(days=1))
     message = jsonify({"message": "User registered successfully"})
     set_access_cookies(message, access_token)
     return message, 200
@@ -84,7 +84,7 @@ def login_user():
     if not bcrypt.check_password_hash(user.password, data['password']):
       return jsonify({"message": "Invalid password"}), 400
 
-    access_token = create_access_token(identity={"username": user.username, "id": user.id, "company_id": user.company_id, "role_id": user.role_id}, expires_delta=datetime.timedelta(days=1))
+    access_token = create_access_token(identity={"username": user.username, "first_name": user.first_name, "last_name": user.last_name, "id": user.id, "company_id": user.company_id, "company_name": user.company.company, "role_id": user.role_id, "role_name": user.role.role}, expires_delta=datetime.timedelta(days=1))
     message = jsonify({"message": "User logged in successfully"})
     set_access_cookies(message, access_token)
     return message, 200
@@ -100,10 +100,4 @@ def logout():
 @jwt_required()
 def get_user():
     current_user = get_jwt_identity()
-    with app.app_context():
-      user = User.query.join(Company, User.company_id == Company.id).join(Role, User.role_id == Role.id).add_columns(Company.company, Role.role).filter(User.id == current_user['id']).first()
-      current_user['company_name'] = str(user[1])
-      current_user['role_name'] = str(user[2])
-      current_user['first_name'] = user[0].to_dict()['first_name']
-      current_user['last_name'] = user[0].to_dict()['last_name']
     return jsonify(logged_in_as=current_user), 200

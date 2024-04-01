@@ -1,7 +1,6 @@
 from main import db
 from app.models.Severity import Severity
 from app.models.Status import Status
-from app.models.Project import Project
 from app.models.User import User
 import datetime
 
