@@ -1,8 +1,8 @@
+from flask_seeder import Seeder
 from app.models.Role import Role
-from main import db, app
 
-def seed_roles():
-  with app.app_context():
+class SeedStatus(Seeder):
+  def run(self):
     Role.query.delete()
     roles = [
       Role(role='Admin'),
@@ -10,6 +10,7 @@ def seed_roles():
       Role(role='Developer'),
       Role(role='Tester'),
     ]
-    db.session.add_all(roles)
-    db.session.commit()
-    db.session.close()
+    self.db.session.add_all(roles)
+    self.db.session.commit()
+    self.db.session.close()
+    print("Added Roles!")
