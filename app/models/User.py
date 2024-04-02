@@ -15,7 +15,8 @@ class User(db.Model):
   role = db.relationship(Role, backref=db.backref('user'))
   company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=True)
   company = db.relationship(Company, foreign_keys=[company_id], backref=db.backref('user'))
-
+  # reporter = db.relationship('Bug', backref='reporter')
+  # resolver = db.relationship('Bug', backref='resolver')
   def to_dict(self):
     return {
       "username": self.username, 

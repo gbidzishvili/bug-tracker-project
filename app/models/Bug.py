@@ -15,9 +15,10 @@ class Bug(db.Model):
   status = db.relationship(Status, backref=db.backref('bug'))
   project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
   reporter_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-  reporter = db.relationship(User, foreign_keys=[reporter_id], backref=db.backref('bug'))
+  reporter = db.relationship(User, foreign_keys=[reporter_id], backref=db.backref('reporter'))
   resolver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-  resolver = db.relationship(User, foreign_keys=[resolver_id], backref=db.backref('bug'))
+  resolver = db.relationship(User, foreign_keys=[resolver_id], backref=db.backref('resolver'))
+  company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
   created_at = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
   updated_at = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
   
@@ -29,13 +30,14 @@ class Bug(db.Model):
       "severity": self.severity.severity,
       "status": self.status.status,
       "project_id": self.project_id,
+      "company_id": self.company_id,
       "reporter": {
-        "name": self.reporter.name, 
+        "first_name": self.reporter.first_name, 
         "last_name": self.reporter.last_name,
         "username": self.reporter.username,
       },
-      "resolver": {
-        "name": self.resolver.name, 
+      "resolver": self.resolver is not None and {
+        "first_name": self.resolver.first_name, 
         "last_name": self.resolver.last_name,
         "username": self.resolver.username,
       },
