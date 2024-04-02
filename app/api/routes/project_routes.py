@@ -3,6 +3,7 @@ from main import app, db
 from app.models.Project import Project
 from flask import Blueprint
 from flask_jwt_extended import get_jwt_identity, jwt_required
+from app.validations.project_validation import PostProject
 
 project_bp = Blueprint('projects', __name__, url_prefix='/projects')
 
@@ -19,7 +20,11 @@ def get_projects():
 @jwt_required()
 def post_project():
   data = request.form
+  form = PostProject(data)
   current_user = get_jwt_identity()
+
+  if not form.validate():
+      return jsonify({"message": "Validation Error", "errors": form.errors}), 400
 
   if current_user['role_id'] != 1 and current_user['role_id'] != 2:
     return jsonify({"message": "Unauthorized"}), 401
