@@ -7,8 +7,9 @@ class Project(db.Model):
   company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
   created_at = db.Column(db.DateTime, default=datetime.datetime.now)
   
-  def toDict(self):
+  def to_dict(self):
     return {
+      'id': self.id,
       'project': self.project,
       'company_id': self.company_id,
     }

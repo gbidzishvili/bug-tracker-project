@@ -13,7 +13,7 @@ def get_projects():
   current_user = get_jwt_identity()
   with app.app_context():
     projects = Project.query.filter_by(company_id = current_user["company_id"]).all()
-    projects = [project.toDict() for project in projects]
+    projects = [project.to_dict() for project in projects]
     return jsonify({"data": projects})
   
 @project_bp.route('/create', methods=['POST'])
@@ -33,4 +33,4 @@ def post_project():
     project = Project(project=data['project'], company_id=current_user['company_id'])
     db.session.add(project)
     db.session.commit()
-    return jsonify({"message": "Project created successfully"})
+    return jsonify({"message": "Project created successfully", "id": project.id})
