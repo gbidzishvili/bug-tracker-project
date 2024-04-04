@@ -24,13 +24,22 @@ class Bug(db.Model):
   
   def to_dict(self):
     return {
+      "id": self.id,
       "name": self.name,
       "description": self.description,
       "solution": self.solution,
-      "severity": self.severity.severity,
-      "status": self.status.status,
+      "severity": {
+        "severity": self.severity.severity,
+        "color": self.severity.color,
+      },
+      "status": {
+        "status": self.status.status,
+        "color": self.status.color,
+      },
       "project_id": self.project_id,
       "company_id": self.company_id,
+      "created_at": self.created_at,
+      "updated_at": self.updated_at,
       "reporter": {
         "first_name": self.reporter.first_name, 
         "last_name": self.reporter.last_name,
