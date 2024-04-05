@@ -28,7 +28,13 @@ def post_bug():
       return jsonify({"message": "Validation Error", "errors": form.errors}), 400
 
   with app.app_context():
-    bug = Bug(**data, company_id = current_user['company_id'])
+    project = Project.query.filter_by(id = data['project_id']).first()
+    if not project:
+      return jsonify({"message": "Project not found"}), 404
+    if project.company_id != current_user['company_id']:
+      return jsonify({"message": "You are not authorized to create a bug for this project"}), 401
+    
+    bug = Bug(**data, status_id = 1, company_id = current_user['company_id'], reporter_id = current_user['id'])
     db.session.add(bug)
     db.session.commit()
     return jsonify({"message": "Bug created successfully"})
