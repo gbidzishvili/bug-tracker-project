@@ -17,6 +17,16 @@ def get_bugs(project_id):
     bugs = [bug.to_dict() for bug in bugs]
     return jsonify({"data": bugs})
 
+@bug_bp.route('/get/<project_id>/<bug_id>', methods=['GET'])
+@jwt_required()
+def get_bug(project_id, bug_id):
+  current_user = get_jwt_identity()
+  with app.app_context():
+    bug = Bug.query.filter_by(id = bug_id, project_id = project_id, company_id=current_user['company_id']).first()
+    if not bug:
+      return jsonify({"message": "Bug not found"}), 404
+    return jsonify({"data": bug.to_dict()})
+
 @bug_bp.route('/create', methods=['POST'])
 @jwt_required()
 def post_bug():
