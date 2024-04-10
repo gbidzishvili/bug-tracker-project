@@ -25,10 +25,12 @@ if __name__ == '__main__':
   from app.api.routes.project_routes import project_bp
   from app.api.routes.bug_routes import bug_bp
   from app.api.routes.severity_routes import severity_bp
+  from app.api.routes.status_routes import status_bp
   app.register_blueprint(role_bp)
   app.register_blueprint(user_bp)
   app.register_blueprint(project_bp)
   app.register_blueprint(bug_bp)
   app.register_blueprint(severity_bp)
+  app.register_blueprint(status_bp)
   
   app.run(debug=True)

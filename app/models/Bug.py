@@ -29,10 +29,12 @@ class Bug(db.Model):
       "description": self.description,
       "solution": self.solution,
       "severity": {
+        "severity_id": self.severity.id,
         "severity": self.severity.severity,
         "color": self.severity.color,
       },
       "status": {
+        "status_id": self.status.id,
         "status": self.status.status,
         "color": self.status.color,
       },
