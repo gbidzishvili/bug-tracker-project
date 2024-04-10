@@ -2,7 +2,7 @@ from flask import request, jsonify
 from main import app, db
 from flask import Blueprint
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from app.validations.bug_validation import PostBug
+from app.validations.bug_validation import PostBug, UpdateBug
 from app.models.Bug import Bug
 from app.models.Project import Project
 
@@ -48,3 +48,27 @@ def post_bug():
     db.session.add(bug)
     db.session.commit()
     return jsonify({"message": "Bug created successfully"})
+  
+@bug_bp.route('/update', methods=['POST'])
+@jwt_required()
+def update_bug():
+  data = request.form
+  form = UpdateBug(data)
+  current_user = get_jwt_identity()
+
+  if not form.validate():
+    return jsonify({"message": "Validation Error", "errors": form.errors}), 400
+
+  with app.app_context():
+    bug = Bug.query.filter_by(id = data['id']).first()
+    if not bug:
+      return jsonify({"message": "Bug not found"}), 404
+    if bug.company_id != current_user['company_id']:
+      return jsonify({"message": "You are not authorized to update this bug"}), 401
+    bug.description = data['description']
+    bug.solution = data['solution']
+    bug.status_id = data['status_id']
+    bug.severity_id = data['severity_id']
+    bug.name = data['name']
+    db.session.commit()
+    return jsonify({"message": "Bug updated successfully"})
