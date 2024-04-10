@@ -5,6 +5,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.validations.bug_validation import PostBug, UpdateBug
 from app.models.Bug import Bug
 from app.models.Project import Project
+import datetime
 
 bug_bp = Blueprint('bugs', __name__, url_prefix='/bugs')
 
@@ -70,5 +71,8 @@ def update_bug():
     bug.status_id = data['status_id']
     bug.severity_id = data['severity_id']
     bug.name = data['name']
+    if data['status_id'] == '5':
+      bug.updated_at = datetime.datetime.now(datetime.UTC)
+      bug.resolver_id = current_user['id']
     db.session.commit()
     return jsonify({"message": "Bug updated successfully"})
