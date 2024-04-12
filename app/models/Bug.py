@@ -32,11 +32,13 @@ class Bug(db.Model):
         "severity_id": self.severity.id,
         "severity": self.severity.severity,
         "color": self.severity.color,
+        "description": self.severity.description,
       },
       "status": {
         "status_id": self.status.id,
         "status": self.status.status,
         "color": self.status.color,
+        "description": self.status.description,
       },
       "project_id": self.project_id,
       "company_id": self.company_id,
