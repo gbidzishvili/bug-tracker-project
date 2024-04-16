@@ -76,3 +76,15 @@ def update_bug():
       bug.resolver_id = current_user['id']
     db.session.commit()
     return jsonify({"message": "Bug updated successfully"})
+
+@bug_bp.route('/delete/<bug_id>', methods=['POST'])
+@jwt_required()
+def delete_bug(bug_id):
+  current_user = get_jwt_identity()
+  with app.app_context():
+    bug = Bug.query.filter_by(id = bug_id, company_id = current_user['company_id']).first()
+    if not bug:
+      return jsonify({"message": "Bug not found"}), 404
+    db.session.delete(bug)
+    db.session.commit()
+    return jsonify({"message": "Bug deleted successfully"})
