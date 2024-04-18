@@ -16,6 +16,16 @@ def get_projects():
     projects = [project.to_dict() for project in projects]
     return jsonify({"data": projects})
   
+@project_bp.route('/get/<project_id>', methods=['GET'])
+@jwt_required()
+def get_project(project_id):
+  current_user = get_jwt_identity()
+  with app.app_context():
+    project = Project.query.filter_by(company_id = current_user["company_id"], id=project_id).first()
+    if not project:
+      return jsonify({"message": "Project not found"}), 404
+    return jsonify({"data": project.to_dict()})
+  
 @project_bp.route('/create', methods=['POST'])
 @jwt_required()
 def post_project():
