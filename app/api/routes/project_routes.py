@@ -24,7 +24,7 @@ def get_project(project_id):
     project = Project.query.filter_by(company_id = current_user["company_id"], id=project_id).first()
     if not project:
       return jsonify({"message": "Project not found"}), 404
-    return jsonify({"data": project.to_dict()})
+    return jsonify({"data": project.to_dict(True)})
   
 @project_bp.route('/create', methods=['POST'])
 @jwt_required()
