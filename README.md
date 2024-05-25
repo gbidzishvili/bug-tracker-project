@@ -48,7 +48,7 @@ They can modify bugs, add severity levels, see analytics, etc.
 - [MySQL-python](https://pypi.org/project/MySQL-python/) - For creating MySQL database
 - [Flask-WTF](https://flask-wtf.readthedocs.io/en/1.2.x/) - For validating forms
 - [flask-jwt-extended](https://flask-jwt-extended.readthedocs.io/en/stable/) - For creating Json Web Tokens
-- [flask-cors](https://flask-cors.readthedocs.io/) - For configuring CORS
+- [flask-cors](https://pypi.org/project/Flask-Cors/1.10.3/) - For configuring CORS
 - [click](https://click.palletsprojects.com/en/8.1.x/) - For creating commands
 - [email_validator](https://pypi.org/project/email-validator/) - For validating email
 - [Flask-Seeder](https://pypi.org/project/Flask-Seeder/) - For seeding base data into database
