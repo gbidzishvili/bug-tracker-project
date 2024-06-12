@@ -32,5 +32,6 @@ if __name__ == '__main__':
   app.register_blueprint(bug_bp)
   app.register_blueprint(severity_bp)
   app.register_blueprint(status_bp)
+
   
   app.run(host='0.0.0.0', port=5000, debug=True)
