@@ -101,3 +101,17 @@ def logout():
 def get_user():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
+
+
+
+@user_bp.route('/get', methods=['GET'])
+@jwt_required()
+def get_users():
+  current_user = get_jwt_identity()
+  if current_user["role_id"] == 1 :
+    with app.app_context():
+      users = User.query.all()
+      users= [user.to_dict() for user in users]
+      return jsonify({"data": users})
+  else:
+    return jsonify({"message": "Unauthorized"})
